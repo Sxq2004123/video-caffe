@@ -220,15 +220,24 @@ void DataTransformer<Dtype>::Transform(const vector<cv::Mat> & mat_vector,
     Dtype* mean = NULL;
     const bool has_mean_file = param_.has_mean_file();
     if (has_mean_file) {
-      CHECK(data_mean_.shape(0) == mat_vector[0].channels() ||
-            data_mean_.shape(0) == 1);
-      CHECK_EQ(mat_vector[0].rows, data_mean_.shape(2));
-      CHECK_EQ(mat_vector[0].cols, data_mean_.shape(3));
+      /*
+      LOG(INFO) << "is_video && has_mean_file";
+      for (size_t i=0; i<5; ++i) {
+        LOG(INFO) << "data_mean_.shape(" << i << ")="
+                  << data_mean_.shape(i);
+      }
+      */
+      CHECK(data_mean_.shape(1) == mat_vector[0].channels() ||
+            data_mean_.shape(1) == 1);
+      CHECK_EQ(mat_vector[0].rows, data_mean_.shape(3));
+      CHECK_EQ(mat_vector[0].cols, data_mean_.shape(4));
       mean = data_mean_.mutable_cpu_data();
-      if ((1 != length) && (length == data_mean_.shape(1))) {
+      if ((1 != length) && (length == data_mean_.shape(2))) {
+        //LOG(INFO) << "is_video && has_mean_file && length == " << length;
         mean_cube_subtracted = true;
       } else {
-        CHECK_EQ(1, data_mean_.shape(1));  // will be applied later
+        //LOG(INFO) << "is_video && has_mean_file && length == 1";
+        CHECK_EQ(1, data_mean_.shape(2));  // will be applied later
       }
     }
 
@@ -313,6 +322,11 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
 
   CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
 
+  // For videos, re-use random seed to replicate randomness
+  // (e.g. same croppings, mirrorings)
+  if (is_video)
+    SetRandFromSeed(rng_seed_);
+
   const Dtype scale = param_.scale();
   const bool do_mirror = param_.mirror() && Rand(2);
   const bool has_mean_file = param_.has_mean_file();
@@ -339,11 +353,6 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
       }
     }
   }
-
-  // For videos, re-use random seed to replicate randomness
-  // (e.g. same croppings, mirrorings)
-  if (is_video)
-    SetRandFromSeed(rng_seed_);
 
   int h_off = 0;
   int w_off = 0;
@@ -397,6 +406,24 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
       }
     }
   }
+/*
+  for (int h = 0; h < std::min(height,2); ++h) {
+    for (int w = 0; w < std::min(width,2); ++w) {
+      for (int c = 0; c < std::min(img_channels,2); ++c) {
+        if (do_mirror) {
+          top_index = (c * height + h) * width + (width - 1 - w);
+        } else {
+          top_index = (c * height + h) * width + w;
+        }
+        LOG(INFO) << "transformed_data @("
+                  << "h=" << h
+                  << ",w=" << w
+                  << ",c=" << c
+                  << ")= " << transformed_data[top_index];
+      }
+    }
+  }
+*/
 }
 #endif  // USE_OPENCV
 
