@@ -529,7 +529,6 @@ void Blob<Dtype>::FromProto(const BlobProto& proto, bool reshape) {
     } else {
       for (int i = 0; i < proto.diff_size(); ++i) {
         data_vec[i] = proto.diff(i);
-        //LOG(INFO) << "data_vec[" << i << "]="<< data_vec[i];
       }
     }
   }
