@@ -286,10 +286,10 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const int img_width = cv_img.cols;
 
   // Check dimensions.
-  const int channels = transformed_blob->channels();
-  const int height = transformed_blob->height();
-  const int width = transformed_blob->width();
-  const int num = transformed_blob->num();
+  const int num = transformed_blob->shape(0);
+  const int channels = transformed_blob->shape(1);
+  const int height = transformed_blob->shape(-2);
+  const int width = transformed_blob->shape(-1);
 
   CHECK_EQ(channels, img_channels);
   CHECK_LE(height, img_height);
