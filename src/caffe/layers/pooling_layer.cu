@@ -342,14 +342,10 @@ void PoolingLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     int stride_w_ = stride_.cpu_data()[1];
     int pad_h_ = pad_.cpu_data()[0];
     int pad_w_ = pad_.cpu_data()[1];
-    int dilation_h_ = dilation_.cpu_data()[0];
-    int dilation_w_ = dilation_.cpu_data()[1];
     int height_ = size_.cpu_data()[0];
     int width_ = size_.cpu_data()[1];
     int pooled_height_ = pooled_size_.cpu_data()[0];
     int pooled_width_ = pooled_size_.cpu_data()[1];
-    int ext_kernel_h = ext_kernel_shape_.cpu_data()[0];
-    int ext_kernel_w = ext_kernel_shape_.cpu_data()[0];
 
     switch (this->layer_param_.pooling_param().pool()) {
     case PoolingParameter_PoolMethod_MAX:
@@ -564,14 +560,10 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     int stride_w_ = stride_.cpu_data()[1];
     int pad_h_ = pad_.cpu_data()[0];
     int pad_w_ = pad_.cpu_data()[1];
-    int dilation_h_ = dilation_.cpu_data()[0];
-    int dilation_w_ = dilation_.cpu_data()[1];
     int height_ = size_.cpu_data()[0];
     int width_ = size_.cpu_data()[1];
     int pooled_height_ = pooled_size_.cpu_data()[0];
     int pooled_width_ = pooled_size_.cpu_data()[1];
-    int ext_kernel_h = ext_kernel_shape_.cpu_data()[0];
-    int ext_kernel_w = ext_kernel_shape_.cpu_data()[0];
 
     switch (this->layer_param_.pooling_param().pool()) {
     case PoolingParameter_PoolMethod_MAX:

@@ -48,6 +48,8 @@ void VideoDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>&
     lines_.push_back(video_and_label);
   }
 
+  CHECK(!lines_.empty()) << "File is empty";
+
   if (this->layer_param_.video_data_param().shuffle()) {
     // randomly shuffle data
     LOG(INFO) << "Shuffling data";
@@ -55,7 +57,7 @@ void VideoDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>&
     prefetch_rng_.reset(new Caffe::RNG(prefetch_rng_seed));
     ShuffleVideos();
   }
-  LOG(INFO) << "A total of " << lines_.size() << " video chunks.";
+  LOG(INFO) << "A total of " << lines_.size() << " video clips.";
 
   lines_id_ = 0;
   // Check if we would need to randomly skip a few data points
@@ -148,7 +150,7 @@ void VideoDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
                                           lines_[lines_id_].second <<
                                           " correctly.";
   // Use data_transformer to infer the expected blob shape from a cv_imgs.
-  bool is_video = true;
+  const bool is_video = true;
   vector<int> top_shape = this->data_transformer_->InferBlobShape(cv_imgs,
                                                                   is_video);
   this->transformed_data_.Reshape(top_shape);

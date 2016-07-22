@@ -12,8 +12,8 @@ void CuDNNLCNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
   CUDNN_CHECK(cudnnCreate(&handle_));
   CUDNN_CHECK(cudnnCreateLRNDescriptor(&norm_desc_));
-  cudnn::createTensor4dDesc<Dtype>(&bottom_desc_);
-  cudnn::createTensor4dDesc<Dtype>(&top_desc_);
+  cudnn::createTensorNdDesc<Dtype>(&bottom_desc_);
+  cudnn::createTensorNdDesc<Dtype>(&top_desc_);
 
   // create a LRN handle
   handles_setup_ = true;
@@ -29,9 +29,9 @@ template <typename Dtype>
 void CuDNNLCNLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
   LRNLayer<Dtype>::Reshape(bottom, top);
-  cudnn::setTensor4dDesc<Dtype>(&bottom_desc_, bottom[0]->num(),
+  cudnn::setTensorNdDesc<Dtype>(&bottom_desc_, bottom[0]->num(),
       this->channels_, this->height_, this->width_);
-  cudnn::setTensor4dDesc<Dtype>(&top_desc_, bottom[0]->num(),
+  cudnn::setTensorNdDesc<Dtype>(&top_desc_, bottom[0]->num(),
       this->channels_, this->height_, this->width_);
   CUDNN_CHECK(cudnnSetLRNDescriptor(norm_desc_, size_, alpha_, beta_, k_));
 
